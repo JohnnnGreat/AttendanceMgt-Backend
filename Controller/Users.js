@@ -76,4 +76,13 @@ const Login = async (req, res) => {
   }
 };
 
-module.exports = { Register, Login };
+const getUsers = async () => {
+  try {
+    const users = await User.find({});
+    res.status(200).json({ users });
+    console.log(users);
+  } catch (error) {
+    console.log(error);
+  }
+};
+module.exports = { Register, Login, getUsers };
