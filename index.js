@@ -1,15 +1,26 @@
 const express = require("express");
+const { connectToDb } = require("./dbconfig");
+const dotenv = require("dotenv");
+const userRoutes = require("./Routes/userRoutes.js");
 
 // Initialize Express Application
 const app = express();
 
+// COnfigurations
+const { configs } = require("./Configs/configs");
+app.use(express.json());
+configs();
+
 //Port
 const PORT = process.env.PORT || 3030;
 
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "Now Working, THank you" });
-});
+app.use("/users", userRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server Running at Port ${PORT}`);
-});
+const connect = async () => {
+  await connectToDb();
+  await app.listen(PORT, () => {
+    console.log(`Server Running at Port ${PORT}`);
+  });
+};
+
+connect();
