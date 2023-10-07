@@ -7,14 +7,18 @@ const Register = async (req, res) => {
   try {
     const { userName, fullName, admissionNo, email, password } = req.body;
     if (!userName || !fullName || !admissionNo || !email || !password) {
-      res.status(401).json({ message: "Invalid Credentials", success: false });
+      return res
+        .status(401)
+        .json({ message: "Invalid Credentials", success: false });
     }
 
     //Check if user exist
     const user = await User.findOne({ email });
 
     if (user)
-      res.status(400).json({ message: "User Already Exist", success: false });
+      return res
+        .status(400)
+        .json({ message: "User Already Exist", success: false });
 
     const encryptedPassword = await bcrypt.hash(password, 12);
     console.log(encryptedPassword);
@@ -35,24 +39,33 @@ const Register = async (req, res) => {
       }
     );
 
-    res.status(200).json({ user: user, token: token });
+    res.status(200).json({
+      user: user,
+      token: token,
+      message: "User Created Succesfullly",
+      success: true,
+    });
   } catch (err) {
     console.log(err);
   }
 };
 
 const Login = async (req, res) => {
+  console.log(req.body);
   const { email, password } = req.body;
-  if (!email)
-    res.status(400).json({ message: "Invalid Credentials", success: false });
+
   try {
+    if (!email)
+      res.status(400).json({ message: "Invalid Credentials", success: false });
     const user = await User.findOne({ email });
     if (!user)
-      res.status(400).json({ message: "User not found", success: false });
+      return res
+        .status(400)
+        .json({ message: "User not found", success: false });
 
     const isPassword = await bcrypt.compare(password, user.password);
     if (!isPassword)
-      res
+      return res
         .status(400)
         .json({ message: "Incorrect Login Details", success: false });
 
@@ -70,9 +83,11 @@ const Login = async (req, res) => {
       token: token,
     });
   } catch (err) {
-    res
-      .status(400)
-      .json({ message: "An Error Occured", error: err, success: false });
+    res.status(400).json({
+      message: "Failed to Login, Please check your network",
+      error: err,
+      success: false,
+    });
   }
 };
 

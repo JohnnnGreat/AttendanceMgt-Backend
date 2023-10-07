@@ -2,9 +2,11 @@ const express = require("express");
 const { connectToDb } = require("./dbconfig");
 const dotenv = require("dotenv");
 const userRoutes = require("./Routes/userRoutes.js");
+const cors = require("cors");
 
 // Initialize Express Application
 const app = express();
+app.use(cors());
 
 // COnfigurations
 const { configs } = require("./Configs/configs");
